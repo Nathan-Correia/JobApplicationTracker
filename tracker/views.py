@@ -70,7 +70,8 @@ def application_edit(request, application_id):
     return render(request, 'tracker/partials/application_edit.html', {'j': job})
 
 def application_view(request, application_id):
-    return HttpResponse(status=200)
+    job = get_object_or_404(JobApplication, id=int(application_id))
+    return render(request, 'tracker/partials/application_view.html', {'j': job})
 
 @csrf_exempt  # Disable CSRF for simplicity in this view
 @require_http_methods(["DELETE"])
