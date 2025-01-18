@@ -14,46 +14,21 @@ def main_landing(request):
     return render(request, 'tracker/main_landing.html', {'jobs': jobs})
 
 def add_job_list(request):
-    import random
-    from datetime import timedelta, date
-    from tracker.models import JobApplication
-
-    # Helper function to generate random dates
-    def random_date(start, end):
-        delta = end - start
-        random_days = random.randint(0, delta.days)
-        return start + timedelta(days=random_days)
-
-    # Data for generating random objects
-    companies = ["TechCorp", "DataWorks", "DesignCo", "InnoSoft", "HealthPlus"]
-    positions = ["Software Engineer", "Data Scientist", "UX Designer", "Product Manager", "System Analyst"]
-    statuses = ["applied", "screening", "interview", "offer", "rejected", "accepted"]
-    descriptions = [
-        "Develop and maintain software solutions.",
-        "Analyze datasets and build predictive models.",
-        "Design user-friendly interfaces and experiences.",
-        "Manage product development lifecycles.",
-        "Optimize IT systems for scalability and efficiency.",
-    ]
-    salary_ranges = ["$60k - $80k", "$70k - $90k", "$80k - $110k", "$90k - $120k", "$100k - $130k"]
-
-    # Generate random objects
-    start_date = date(2023, 1, 1)
-    end_date = date(2025, 1, 1)
-
-    for i in range(10):  # Create 10 objects
-        JobApplication.objects.create(
-            company_name=random.choice(companies),
-            position=random.choice(positions),
-            date_applied=random_date(start_date, end_date),
-            status=random.choice(statuses),
-            job_description=random.choice(descriptions),
-            salary_range=random.choice(salary_ranges),
-            next_follow_up=random_date(date.today(), date.today() + timedelta(days=30)),
-            notes=f"Sample note for job application {i + 1}.",
+    if request.method == 'POST':
+    # Create the job from posted data (handle validation, etc.)
+        job = JobApplication.objects.create(
+            company_name=request.POST.get('company_name'),
+            position=request.POST.get('position'),
+            date_applied=request.POST.get('date_applied') or None,
+            status=request.POST.get('status'),
+            job_description=request.POST.get('job_description', ''),
+            salary_range=request.POST.get('salary_range', ''),
+            next_follow_up=request.POST.get('next_follow_up') or None,
+            notes=request.POST.get('notes', ''),
         )
-
-    return render(request, 'tracker/partials/job_table.html')
+        # Render partial row for this new job
+        return render(request, 'tracker/partials/add_item.html', {'job': job})
+    return render(request, 'tracker/partials/add_item.html')
 
 def refresh_job_list(request):
 
@@ -83,3 +58,8 @@ def delete_individual(request):
 
     # Return a 204 No Content response to remove the row
     return HttpResponse(status=200)
+
+def get_table_again(request):
+    jobs = JobApplication.objects.all()
+
+    return render(request, 'tracker/partials/main_table.html', {'jobs': jobs})
