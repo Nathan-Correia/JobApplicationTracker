@@ -1,0 +1,53 @@
+<table 
+class="border-collapse bg-purple-50 rounded-lg overflow-hidden border border-purple-300"
+>
+<thead>
+  <tr class="bg-purple-100">
+    <th class="px-4 py-2">Company Name</th>
+    <th class="px-4 py-2">Job Title</th>
+    <th class="px-4 py-2">Date</th>
+    <th class="px-4 py-2">Status</th>
+    <th class="px-4 py-2"></th>
+  </tr>
+</thead>
+<tbody id="job_list">
+  {% for j in jobs %}
+  <tr 
+    id="job-{{ j.id }}" 
+    hx-get="/application/{{ j.id }}/details"
+    hx-target="#job-{{ j.id }}-details" 
+    hx-swap="innerHTML"
+  >
+    <td class="px-4 py-2 border-t border-purple-300">{{ j.company_name }}</td>
+    <td class="px-4 py-2 border-t border-purple-300">{{ j.position }}</td>
+    <td class="px-4 py-2 border-t border-purple-300">{{ j.date_applied }}</td>
+    <td class="px-4 py-2 border-t border-purple-300">{{ j.get_status_display }}</td>
+    <td class="px-4 py-2 border-t border-purple-300">
+      <button 
+        class="text-purple-1000 py-2 px-4 rounded bg-purple-400 font-bold hover:bg-purple-600 hover:text-purple-100"
+        hx-delete="{% url 'delete_individual' %}" 
+        hx-target="#job-{{ j.id }}" 
+        hx-swap="outerHTML"
+        hx-headers='{"X-Job-ID": "{{ j.id }}"}'
+      >
+        Delete
+      </button>
+    </td>
+  </tr>
+  <tr 
+    id="job-{{ j.id }}-details" 
+    class="bg-purple-100"
+  ></tr>
+  {% endfor %}
+</tbody>
+</table>
+<div class="mt-4 flex space-x-4">
+    <button 
+      class="bg-purple-400 text-purple-1000 py-2 px-4 rounded font-bold hover:bg-purple-600 hover:text-purple-100"
+      hx-get="/add_job_list" 
+      hx-target="#content" 
+      hx-swap="innerHTML"
+    >
+      Add Item
+    </button>
+  </div>
