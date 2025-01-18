@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
-from datetime import datetime
+from django.conf import settings
+
 
 class JobApplication(models.Model):
     STATUS_CHOICES = [
@@ -33,6 +34,10 @@ class Communication(models.Model):
         ordering = ['-date']
 
 class Resume(models.Model):
+    # https://stackoverflow.com/a/63255662
+    # Resume.objects.filter(user="1")
+    user = models.CharField(max_length=255, blank=True, null=True, default="1")
+
     # Basic Information
     full_name = models.CharField(blank=True, max_length=255)
     contact_email = models.TextField(blank=True)
@@ -56,7 +61,7 @@ class Resume(models.Model):
     
 
 '''
-full_name : Jane Doe,
+full_name : Jane Doe
 contact_email : janedoe@example.com
 phone_number : 555-123-4567
 address : 123 Main St, Springfield, IL 62701

@@ -37,14 +37,9 @@
     <h2>Additional Information</h2>
     <p>{{ resume.additional_info }}</p>
 
-    <!-- Edit modifies the master resume -->
-    <a href="{% url 'edit_resume' resume_id=resume.id %}">
-        <button>Edit Master Resume</button>
+    <a href="{% url 'dashboard' %}">
+        <button>Return Home</button>
     </a>
 
-    <!-- customize resume gives the user a one time custom resume based on their edits -->
-    <a href="{% url 'customize_resume' resume_id=resume.id %}">
-        <button>Customize Resume</button>
-    </a>
 </body>
 </html>
