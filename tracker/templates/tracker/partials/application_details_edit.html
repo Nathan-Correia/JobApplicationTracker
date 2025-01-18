@@ -1,0 +1,18 @@
+<td colspan="5">
+    <!-- This div can be scrollable if content is large -->
+    <div style="max-height: 200px; overflow-y: auto; padding: 1rem;" class="bg-purple-100">
+      <h3>Edit details for {{ job.company_name }}</h3>
+      <form hx-put="/application/{{ job.id }}/update" hx-target="#job-{{ job.id }}-details" hx-swap="innerHTML" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+        {% csrf_token %}
+        <input type="text" name="company_name" value="{{ job.company_name }}" class="border rounded px-2 py-1">
+        <input type="text" name="position" value="{{ job.position }}" class="border rounded px-2 py-1">
+        <input type="text" name="salary_range" value="{{ job.salary_range }}" class="border rounded px-2 py-1">
+        <button type="submit"
+          class="text-purple-1000 py-2 px-4 rounded bg-purple-400 font-bold hover:bg-purple-600 hover:text-purple-100">
+          Save
+        </button>
+      </form>
+      <!-- Add more details, forms, etc. here -->
+    </div>
+  </td>
+</tr>

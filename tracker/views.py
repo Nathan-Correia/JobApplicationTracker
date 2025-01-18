@@ -67,10 +67,29 @@ def application_details(request, application_id):
     job = get_object_or_404(JobApplication, id=int(application_id))
     return render(request, 'tracker/partials/application_details.html', {'job': job})
 
+
+def edit(request, application_id):
+    job = get_object_or_404(JobApplication, id=int(application_id))
+    return render(request, 'tracker/partials/application_details_edit.html', {'job': job})
+
 def application_view(request, application_id):
     return HttpResponse(status=200)
 
-@csrf_exempt  # Disable CSRF for simplicity in this view
+
+@csrf_exempt  # Since you're using HTMX
+def update_application(request, application_id):
+    job = get_object_or_404(JobApplication, id=application_id)
+    
+    # Update the fields
+    job.company_name = request.POST.get('company_name', job.company_name)
+    job.position = request.POST.get('position', job.position) 
+    job.salary_range = request.POST.get('salary_range', job.salary_range)
+    
+    job.save()
+    
+    # Return the view template with updated job
+    return render(request, 'tracker/partials/application_details.html', {'job': job})
+
 @require_http_methods(["DELETE"])
 def delete_individual(request):
     job_id = request.headers.get('X-Job-ID', None)

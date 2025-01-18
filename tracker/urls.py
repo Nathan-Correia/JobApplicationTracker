@@ -7,5 +7,7 @@ urlpatterns = [
     path('refresh_job_list', views.refresh_job_list, name='refresh_job_list'),
     path('delete/', views.delete_individual, name='delete_individual'),
     path('application/<int:application_id>/details', views.application_details, name='application_details'),
-    path('application/<int:application_id>/view', views.application_view, name='application_view')
+    path('application/<int:application_id>/view', views.application_view, name='application_view'),
+    path('application/<int:application_id>/edit', views.edit, name='edit'),
+    path('application/<int:application_id>/update', views.update_application, name='update')
 ]
