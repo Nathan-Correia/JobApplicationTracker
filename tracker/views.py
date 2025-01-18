@@ -9,6 +9,33 @@ from django.urls import reverse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
+from .models import Resume
+from django.forms.models import model_to_dict
+
+
+class ResumeForm(forms.ModelForm):
+    class Meta:
+        model = Resume
+        fields = [
+            'full_name',
+            'contact_email',
+            'phone_number',
+            'address',
+            'summary',
+            'work_experience',
+            'education',
+            'skills',
+            'projects',
+            'additional_info',
+        ]
+        widgets = {
+            'work_experience': forms.Textarea(attrs={'rows': 5}),
+            'education': forms.Textarea(attrs={'rows': 5}),
+            'projects': forms.Textarea(attrs={'rows': 5}),
+            'additional_info': forms.Textarea(attrs={'rows': 5}),
+        }
+
+        
 def main_landing(request):
     jobs = JobApplication.objects.all()
     return render(request, 'tracker/main_landing.html', {'jobs': jobs})
@@ -83,3 +110,50 @@ def delete_individual(request):
 
     # Return a 204 No Content response to remove the row
     return HttpResponse(status=200)
+
+def edit_resume(request):
+    resume = Resume.objects.filter(user="1").first()
+    edit = request.GET.get('edit', 'false').lower() == 'true'
+
+    if request.method == 'POST':
+        # Handle form submission (create or update resume)
+        form = ResumeForm(request.POST, instance=resume if resume else None)
+        if form.is_valid():
+            resume = form.save()
+            return redirect(reverse('resume_detail', args=[resume.id]))
+    else:
+        # Handle form display (edit or create mode)
+        if edit and resume:
+            form = ResumeForm(instance=resume)  # Populate form with existing resume data
+        elif resume:
+            return redirect(reverse('resume_detail', args=[resume.id]))  # Redirect if not in edit mode
+        else:
+            form = ResumeForm()  # Empty form for new resume
+
+    return render(request, 'tracker/resume_form.html', {'form': form})
+
+def resume_detail(request, resume_id):
+    resume = get_object_or_404(Resume, id=resume_id)
+    return render(request, 'tracker/resume_detail.html', {'resume': resume})
+
+
+def customize_resume(request, resume_id):
+    # https://stackoverflow.com/a/65640286
+    resume = Resume.objects.get(pk=resume_id)
+    data = model_to_dict(resume)
+    data.pop('id', None)
+    custom_resume = Resume.objects.create(**data)
+    custom_resume.user = None
+    custom_resume.save()
+    if request.method == 'POST':
+        form = ResumeForm(request.POST, instance=custom_resume)
+        if form.is_valid():
+            resume = form.save()
+            return redirect('custom_resume_detail', resume_id=resume.id)  # Redirect to the detail view
+    else:
+        form = ResumeForm(instance=resume)
+    return render(request, 'tracker/resume_form.html', {'form': form})
+
+def custom_resume_detail(request, resume_id):
+    resume = get_object_or_404(Resume, id=resume_id)
+    return render(request, 'tracker/custom_resume_detail.html', {'resume': resume})
