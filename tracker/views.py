@@ -111,31 +111,25 @@ def delete_individual(request):
     # Return a 204 No Content response to remove the row
     return HttpResponse(status=200)
 
-def create_resume(request):
+def edit_resume(request):
+    resume = Resume.objects.filter(user="1").first()
+    edit = request.GET.get('edit', 'false').lower() == 'true'
+
     if request.method == 'POST':
-        form = ResumeForm(request.POST)
+        # Handle form submission (create or update resume)
+        form = ResumeForm(request.POST, instance=resume if resume else None)
         if form.is_valid():
-            print("valid")
             resume = form.save()
-            resume.user = "1"
-            resume.save()
-            return redirect('resume_detail', resume_id=resume.id)  # Redirect with the correct id
-        else:
-            print("invalid")
-    else:
-        form = ResumeForm()
-    return render(request, 'tracker/resume_form.html', {'form': form})
-
-
-def edit_resume(request, resume_id):
-    resume = get_object_or_404(Resume, id=resume_id)
-    if request.method == 'POST':
-        form = ResumeForm(request.POST, instance=resume)
-        if form.is_valid():
-            form.save()
             return redirect(reverse('resume_detail', args=[resume.id]))
     else:
-        form = ResumeForm(instance=resume)
+        # Handle form display (edit or create mode)
+        if edit and resume:
+            form = ResumeForm(instance=resume)  # Populate form with existing resume data
+        elif resume:
+            return redirect(reverse('resume_detail', args=[resume.id]))  # Redirect if not in edit mode
+        else:
+            form = ResumeForm()  # Empty form for new resume
+
     return render(request, 'tracker/resume_form.html', {'form': form})
 
 def resume_detail(request, resume_id):

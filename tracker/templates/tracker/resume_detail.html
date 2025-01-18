@@ -98,9 +98,9 @@
         <p class="additional-info">{{ resume.additional_info }}</p>
 
         <!-- Edit modifies the master resume -->
-        <a href="{% url 'edit_resume' resume_id=resume.id %}">
+        <a href="{% url 'edit_resume' %}?edit=true">
             <button class="noprint">Edit Master Resume</button>
-    </a>
+        </a>
 
     <!-- customize resume gives the user a one time custom resume based on their edits -->
     <a href="{% url 'customize_resume' resume_id=resume.id %}">
