@@ -25,6 +25,7 @@
             <table class="border-collapse bg-purple-50 rounded-lg overflow-hidden border border-purple-300" >
                 <thead>
                   <tr class="bg-purple-100">
+                    <th class="px-4 py-2">Company Name</th>
                     <th class="px-4 py-2">Job Title</th>
                     <th class="px-4 py-2">Date</th>
                     <th class="px-4 py-2">Status</th>
@@ -33,8 +34,9 @@
                 </thead>
                 <tbody id="job_list">
                   {% for j in jobs %}
-                  <tr id="job-{{ j.id }}">
+                  <tr id="job-{{ j.id }}" hx-get="/application/{{ j.id }}/edit" hx-target="#job-{{ j.id }}" hx-swap="outerHTML settle:0.2">
                       <td class="px-4 py-2 border-t border-purple-300">{{ j.company_name }}</td>
+                      <td class="px-4 py-2 border-t border-purple-300">{{ j.position }}</td>
                       <td class="px-4 py-2 border-t border-purple-300">{{ j.date_applied }}</td>
                       <td class="px-4 py-2 border-t border-purple-300">{{ j.get_status_display }}</td>
                       <td class="px-4 py-2 border-t border-purple-300">
