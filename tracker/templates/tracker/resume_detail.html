@@ -3,48 +3,109 @@
 <head>
     <title>Resume Detail</title>
 </head>
+<style>
+    @media print {
+        .noprint {
+            visibility: hidden;
+        }
+    }
+    body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.4;
+            background-color: #f9f9f9;
+            color: #333;
+    }
+    h1 {
+            font-size: 2em;
+            color: #000000;
+            text-align: center;
+            margin-bottom: 0;
+    }
+    h2 {
+            color: #3f3f3f;
+            border-bottom: 2px solid #d9d9d9;
+            padding-bottom: 5px;
+            font-size: 1.5em;
+    }
+    p {
+            margin: 0;
+    }
+    .resume-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            
+    }
+    a button {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1em;
+            margin-top: 30px;
+    }
+
+    a button:hover {
+        background-color: #003d80;
+    }
+    .additional-info {
+            margin-top: 20px;
+            font-style: italic;
+            color: #555;
+    }
+
+</style>
 <body>
-    <h1>{{ resume.full_name }}</h1>
-    <p>Email: {{ resume.contact_email }}</p>
-    <p>Phone: {{ resume.phone_number }}</p>
-    <p>Address: {{ resume.address }}</p>
-    <p>Summary: {{ resume.summary }}</p>
+    <div class="resume-container">
+        <h1>{{ resume.full_name }}</h1>
+        <span style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+        <p>Email: {{ resume.contact_email }}</p>
+        <p>Phone: {{ resume.phone_number }}</p>
+        </span>
+        <p style="text-align: center;">Address: {{ resume.address }}</p>
+        <p style="margin-top: 10px;">Summary: {{ resume.summary }}</p>
 
-    <h2>Work Experience</h2>
-    <ul>
-        {% for job in resume.work_experience %}
-            <li>{{ job.title }} at {{ job.company }} ({{ job.start_date }} - {{ job.end_date }})</li>
-        {% endfor %}
-    </ul>
+        <h2>Work Experience</h2>
+        <ul>
+            {% for job in resume.work_experience %}
+                <li>{{ job.title }} at {{ job.company }} ({{ job.start_date }} - {{ job.end_date }})</li>
+            {% endfor %}
+        </ul>
 
-    <h2>Education</h2>
-    <ul>
-        {% for edu in resume.education %}
-            <li>{{ edu.degree }} from {{ edu.institution }} ({{ edu.graduation_year }})</li>
-        {% endfor %}
-    </ul>
+        <h2>Education</h2>
+        <ul>
+            {% for edu in resume.education %}
+                <li>{{ edu.degree }} from {{ edu.institution }} ({{ edu.graduation_year }})</li>
+            {% endfor %}
+        </ul>
 
-    <h2>Skills</h2>
-    <p>{{ resume.skills }}</p>
+        <h2>Skills</h2>
+        <p>{{ resume.skills }}</p>
 
-    <h2>Projects</h2>
-    <ul>
-        {% for project in resume.projects %}
-            <li>{{ project.name }}: {{ project.description }}</li>
-        {% endfor %}
-    </ul>
+        <h2>Projects</h2>
+        <ul>
+            {% for project in resume.projects %}
+                <li>{{ project.name }}: {{ project.description }}</li>
+            {% endfor %}
+        </ul>
 
-    <h2>Additional Information</h2>
-    <p>{{ resume.additional_info }}</p>
+        <h2>Additional Information</h2>
+        <p class="additional-info">{{ resume.additional_info }}</p>
 
-    <!-- Edit modifies the master resume -->
-    <a href="{% url 'edit_resume' resume_id=resume.id %}">
-        <button>Edit Master Resume</button>
+        <!-- Edit modifies the master resume -->
+        <a href="{% url 'edit_resume' resume_id=resume.id %}">
+            <button class="noprint">Edit Master Resume</button>
     </a>
 
     <!-- customize resume gives the user a one time custom resume based on their edits -->
     <a href="{% url 'customize_resume' resume_id=resume.id %}">
-        <button>Customize Resume</button>
-    </a>
+        <button class="noprint">Customize Resume</button>
+        </a>
+    </div>
 </body>
 </html>
