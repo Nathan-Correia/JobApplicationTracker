@@ -35,6 +35,9 @@ class ResumeForm(forms.ModelForm):
             'content': forms.Textarea(attrs={'rows': 20}),
         }
 
+def main_landing(request):
+    return render(request, 'tracker/default_page.html')
+
 def dashboard(request):
     recent_applications = JobApplication.objects.all().order_by('-date_applied')[:5]
     upcoming_followups = JobApplication.objects.filter(
