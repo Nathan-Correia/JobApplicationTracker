@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resume Detail</title>
+</head>
+<body>
+    <h1>{{ resume.full_name }}</h1>
+    <p>Email: {{ resume.contact_email }}</p>
+    <p>Phone: {{ resume.phone_number }}</p>
+    <p>Address: {{ resume.address }}</p>
+    <p>Summary: {{ resume.summary }}</p>
+
+    <h2>Work Experience</h2>
+    <ul>
+        {% for job in resume.work_experience %}
+            <li>{{ job.title }} at {{ job.company }} ({{ job.start_date }} - {{ job.end_date }})</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Education</h2>
+    <ul>
+        {% for edu in resume.education %}
+            <li>{{ edu.degree }} from {{ edu.institution }} ({{ edu.graduation_year }})</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Skills</h2>
+    <p>{{ resume.skills }}</p>
+
+    <h2>Projects</h2>
+    <ul>
+        {% for project in resume.projects %}
+            <li>{{ project.name }}: {{ project.description }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Additional Information</h2>
+    <p>{{ resume.additional_info }}</p>
+
+    <!-- Add an Edit Resume button -->
+    <a href="{% url 'edit_resume' resume_id=resume.id %}">
+        <button>Edit Resume</button>
+    </a>
+</body>
+</html>
