@@ -10,4 +10,8 @@ urlpatterns = [
     path('application/<int:application_id>/view', views.application_view, name='application_view'),
     path('main/page', views.get_table_again, name='main_page'),
     path('actually_add_job', views.actually_add_job, name='actually_add_job')
+    path('resume/edit/', views.edit_resume, name='edit_resume'),
+    path('resume/<int:resume_id>/', views.resume_detail, name='resume_detail'),
+    path('resume/<int:resume_id>/customize/', views.customize_resume, name='customize_resume'),
+    path('resume/custom/<int:resume_id>/', views.custom_resume_detail, name='custom_resume_detail'),
 ]
