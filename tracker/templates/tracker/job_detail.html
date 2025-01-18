@@ -1,0 +1,71 @@
+<!-- templates/tracker/partials/job_detail.html -->
+<div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4">
+    <div class="flex justify-between items-start mb-4">
+        <h2 class="text-xl font-bold text-gray-900">{{ job.position }} at {{ job.company_name }}</h2>
+        <button class="text-gray-400 hover:text-gray-500"
+                onclick="document.getElementById('dialog').classList.add('hidden')">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
+
+    <div class="space-y-4">
+        <div>
+            <h3 class="text-sm font-medium text-gray-500">Status</h3>
+            <p class="mt-1">{{ job.get_status_display }}</p>
+        </div>
+
+        <div>
+            <h3 class="text-sm font-medium text-gray-500">Applied Date</h3>
+            <p class="mt-1">{{ job.date_applied }}</p>
+        </div>
+
+        {% if job.salary_range %}
+        <div>
+            <h3 class="text-sm font-medium text-gray-500">Salary Range</h3>
+            <p class="mt-1">{{ job.salary_range }}</p>
+        </div>
+        {% endif %}
+
+        <div>
+            <h3 class="text-sm font-medium text-gray-500">Job Description</h3>
+            <p class="mt-1 whitespace-pre-wrap">{{ job.job_description }}</p>
+        </div>
+
+        <div>
+            <h3 class="text-sm font-medium text-gray-500">Notes</h3>
+            <p class="mt-1 whitespace-pre-wrap">{{ job.notes|default:"No notes added yet." }}</p>
+        </div>
+
+        <div>
+            <h3 class="text-sm font-medium text-gray-500">Communications</h3>
+            <div class="mt-2 space-y-2">
+                {% for comm in job.communications.all %}
+                <div class="bg-gray-50 p-3 rounded">
+                    <div class="flex justify-between">
+                        <span class="text-sm font-medium">{{ comm.type }}</span>
+                        <span class="text-sm text-gray-500">{{ comm.date|date:"M d, Y" }}</span>
+                    </div>
+                    <p class="mt-1 text-sm">{{ comm.notes }}</p>
+                </div>
+                {% empty %}
+                <p class="text-sm text-gray-500">No communications recorded yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-6 flex space-x-3">
+        <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                hx-get="{% url 'job_edit' job.pk %}"
+                hx-target="#dialog">
+            Edit
+        </button>
+        <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                hx-get="{% url 'communication_create' job.pk %}"
+                hx-target="#dialog">
+            Add Communication
+        </button>
+    </div>
+</div>
