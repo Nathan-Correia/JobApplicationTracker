@@ -8,5 +8,6 @@ urlpatterns = [
     path('delete/', views.delete_individual, name='delete_individual'),
     path('application/<int:application_id>/details', views.application_details, name='application_details'),
     path('application/<int:application_id>/view', views.application_view, name='application_view'),
-    path('main/page', views.get_table_again, name='main_page')
+    path('main/page', views.get_table_again, name='main_page'),
+    path('actually_add_job', views.actually_add_job, name='actually_add_job')
 ]

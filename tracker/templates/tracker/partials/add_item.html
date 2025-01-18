@@ -10,9 +10,9 @@
 
   <form 
     method="POST" 
-    hx-post="/add_job" 
-    hx-target="#job_list" 
-    hx-swap="beforeend"
+    hx-post="/actually_add_job" 
+    hx-target="#content" 
+    hx-swap="innerHTML"
     class="bg-purple-50 w-full max-w-xl p-6 rounded shadow-md 
            overflow-y-auto max-h-[90vh]"
   >
@@ -141,7 +141,6 @@
         type="submit" 
         class="text-purple-1000 py-2 px-4 rounded bg-purple-400 font-bold
                hover:bg-purple-600 hover:text-purple-100 transition"
-        hx-create="application/create"
       >
         Submit
       </button>
