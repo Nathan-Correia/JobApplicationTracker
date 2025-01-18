@@ -34,7 +34,7 @@
                 </thead>
                 <tbody id="job_list">
                   {% for j in jobs %}
-                  <tr id="job-{{ j.id }}" hx-get="/application/{{ j.id }}/edit" hx-target="#job-{{ j.id }}" hx-swap="outerHTML">
+                  <tr id="job-{{ j.id }}" hx-get="/application/{{ j.id }}/details" hx-target="#job-{{ j.id }}-details" hx-swap="innerHTML">
                       <td class="px-4 py-2 border-t border-purple-300">{{ j.company_name }}</td>
                       <td class="px-4 py-2 border-t border-purple-300">{{ j.position }}</td>
                       <td class="px-4 py-2 border-t border-purple-300">{{ j.date_applied }}</td>
@@ -50,7 +50,7 @@
                           </button>
                       </td>
                   </tr>
-                  <tr id="job-{{ j.id }}-details"></tr>
+                  <tr id="job-{{ j.id }}-details" class="bg-purple-100"></tr>
                   {% endfor %}
                 </tbody>
             </table class="flex flex-row items-center">

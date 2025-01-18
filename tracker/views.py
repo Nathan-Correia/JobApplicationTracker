@@ -64,14 +64,11 @@ def refresh_job_list(request):
 
 @csrf_exempt
 def application_details(request, application_id):
-
-
     job = get_object_or_404(JobApplication, id=int(application_id))
     return render(request, 'tracker/partials/application_details.html', {'job': job})
 
 def application_view(request, application_id):
-    job = get_object_or_404(JobApplication, id=int(application_id))
-    return render(request, 'tracker/partials/application_view.html', {'j': job})
+    return HttpResponse(status=200)
 
 @csrf_exempt  # Disable CSRF for simplicity in this view
 @require_http_methods(["DELETE"])

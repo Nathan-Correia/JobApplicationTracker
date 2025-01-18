@@ -1,6 +1,6 @@
-<td colspan="5">
+<td colspan="5" hx-get="application/{{ job.id }}/view" hx-swap="#job-{{ j.id }}-details" hx-swap="outerHTML">
     <!-- This div can be scrollable if content is large -->
-    <div style="max-height: 200px; overflow-y: auto; padding: 1rem; background-color: #fdfdfd;">
+    <div style="max-height: 200px; overflow-y: auto; padding: 1rem;" class="bg-purple-100">
       <h3>Full details for {{ job.company_name }}</h3>
       <p>
         Position: {{ job.position }} <br/>
@@ -10,3 +10,4 @@
       <!-- Add more details, forms, etc. here -->
     </div>
   </td>
+</tr>
