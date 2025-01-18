@@ -92,6 +92,7 @@ def update_application(request, application_id):
     # Return the view template with updated job
     return render(request, 'tracker/partials/application_details.html', {'job': job})
 
+@csrf_exempt
 @require_http_methods(["DELETE"])
 def delete_individual(request):
     job_id = request.headers.get('X-Job-ID', None)
