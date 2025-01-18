@@ -6,138 +6,80 @@ from .models import JobApplication, Resume, Communication
 from django.utils import timezone
 from django import forms
 from django.urls import reverse
-
-class JobApplicationForm(forms.ModelForm):
-    class Meta:
-        model = JobApplication
-        fields = ['company_name', 'position', 'date_applied', 'status', 
-                 'job_description', 'salary_range', 'next_follow_up', 'notes']
-        widgets = {
-            'date_applied': forms.DateInput(attrs={'type': 'date'}),
-            'next_follow_up': forms.DateInput(attrs={'type': 'date'}),
-            'job_description': forms.Textarea(attrs={'rows': 4}),
-            'notes': forms.Textarea(attrs={'rows': 4}),
-        }
-
-class CommunicationForm(forms.ModelForm):
-    class Meta:
-        model = Communication
-        fields = ['type', 'notes']
-        widgets = {
-            'notes': forms.Textarea(attrs={'rows': 4}),
-        }
-
-class ResumeForm(forms.ModelForm):
-    class Meta:
-        model = Resume
-        fields = ['title', 'content', 'is_master']
-        widgets = {
-            'content': forms.Textarea(attrs={'rows': 20}),
-        }
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 def main_landing(request):
-    return render(request, 'tracker/default_page.html')
+    jobs = JobApplication.objects.all()
+    return render(request, 'tracker/main_landing.html', {'jobs': jobs})
 
-def dashboard(request):
-    recent_applications = JobApplication.objects.all().order_by('-date_applied')[:5]
-    upcoming_followups = JobApplication.objects.filter(
-        next_follow_up__isnull=False
-    ).order_by('next_follow_up')[:5]
-    
-    total_applications = JobApplication.objects.count()
-    active_applications = JobApplication.objects.exclude(
-        status__in=['rejected', 'accepted']
-    ).count()
-    
-    status_counts = {
-        status: JobApplication.objects.filter(status=status[0]).count()
-        for status in JobApplication.STATUS_CHOICES
-    }
-    
-    context = {
-        'recent_applications': recent_applications,
-        'upcoming_followups': upcoming_followups,
-        'total_applications': total_applications,
-        'active_applications': active_applications,
-        'status_counts': status_counts,
-    }
-    return render(request, 'tracker/dashboard.html', context)
+def add_job_list(request):
+    import random
+    from datetime import timedelta, date
+    from tracker.models import JobApplication
 
-def job_list(request):
-    jobs = JobApplication.objects.all().order_by('-date_applied')
-    return render(request, 'tracker/job_list.html', {'jobs': jobs})
+    # Helper function to generate random dates
+    def random_date(start, end):
+        delta = end - start
+        random_days = random.randint(0, delta.days)
+        return start + timedelta(days=random_days)
 
-def job_detail_partial(request, pk):
-    job = get_object_or_404(JobApplication, pk=pk)
-    return render(request, 'tracker/job_detail.html', {'job': job})
+    # Data for generating random objects
+    companies = ["TechCorp", "DataWorks", "DesignCo", "InnoSoft", "HealthPlus"]
+    positions = ["Software Engineer", "Data Scientist", "UX Designer", "Product Manager", "System Analyst"]
+    statuses = ["applied", "screening", "interview", "offer", "rejected", "accepted"]
+    descriptions = [
+        "Develop and maintain software solutions.",
+        "Analyze datasets and build predictive models.",
+        "Design user-friendly interfaces and experiences.",
+        "Manage product development lifecycles.",
+        "Optimize IT systems for scalability and efficiency.",
+    ]
+    salary_ranges = ["$60k - $80k", "$70k - $90k", "$80k - $110k", "$90k - $120k", "$100k - $130k"]
 
-@require_http_methods(["GET", "POST"])
-def job_create(request):
-    if request.method == "POST":
-        form = JobApplicationForm(request.POST)
-        if form.is_valid():
-            job = form.save()
-            return HttpResponseRedirect(reverse('job_list'))
-        return render(request, 'tracker/job_form.html', {'form': form, 'title': 'Add New Job Application'})
-    else:
-        form = JobApplicationForm()
-    return render(request, 'tracker/job_form.html', {'form': form, 'title': 'Add New Job Application'})
+    # Generate random objects
+    start_date = date(2023, 1, 1)
+    end_date = date(2025, 1, 1)
 
-@require_http_methods(["GET", "POST"])
-def job_edit(request, pk):
-    job = get_object_or_404(JobApplication, pk=pk)
-    if request.method == "POST":
-        form = JobApplicationForm(request.POST, instance=job)
-        if form.is_valid():
-            job = form.save()
-            return HttpResponseRedirect(reverse('job_list'))
-        return render(request, 'tracker/job_form.html', {'form': form, 'title': f'Edit Job Application: {job.position}'})
-    else:
-        form = JobApplicationForm(instance=job)
-    return render(request, 'tracker/job_form.html', {'form': form, 'title': f'Edit Job Application: {job.position}'})
+    for i in range(10):  # Create 10 objects
+        JobApplication.objects.create(
+            company_name=random.choice(companies),
+            position=random.choice(positions),
+            date_applied=random_date(start_date, end_date),
+            status=random.choice(statuses),
+            job_description=random.choice(descriptions),
+            salary_range=random.choice(salary_ranges),
+            next_follow_up=random_date(date.today(), date.today() + timedelta(days=30)),
+            notes=f"Sample note for job application {i + 1}.",
+        )
 
-@require_http_methods(["GET", "POST"])
-def communication_create(request, job_pk):
-    job = get_object_or_404(JobApplication, pk=job_pk)
-    if request.method == "POST":
-        form = CommunicationForm(request.POST)
-        if form.is_valid():
-            communication = form.save(commit=False)
-            communication.job_application = job
-            communication.save()
-            return HttpResponseRedirect(reverse('job_detail_partial', args=[job_pk]))
-    else:
-        form = CommunicationForm()
-    return render(request, 'tracker/communication_form.html', {'form': form, 'job': job})
+    return render(request, 'tracker/partials/job_table.html')
 
-def resume_list(request):
-    resumes = Resume.objects.all().order_by('-updated_at')
-    return render(request, 'tracker/resume_list.html', {'resumes': resumes})
+def refresh_job_list(request):
 
-@require_http_methods(["GET", "POST"])
-def resume_create(request):
-    if request.method == "POST":
-        form = ResumeForm(request.POST)
-        if form.is_valid():
-            resume = form.save(commit=False)
-            if resume.is_master:
-                Resume.objects.filter(is_master=True).update(is_master=False)
-            resume.save()
-            return HttpResponseRedirect(reverse('resume_list'))
-    else:
-        form = ResumeForm()
-    return render(request, 'tracker/resume_form.html', {'form': form})
+    jobs = JobApplication.objects.all()
 
-def resume_detail(request, pk):
-    resume = get_object_or_404(Resume, pk=pk)
-    if request.method == "POST":
-        form = ResumeForm(request.POST, instance=resume)
-        if form.is_valid():
-            resume = form.save(commit=False)
-            if resume.is_master:
-                Resume.objects.filter(is_master=True).exclude(pk=resume.pk).update(is_master=False)
-            resume.save()
-            return HttpResponseRedirect(reverse('resume_list'))
-    else:
-        form = ResumeForm(instance=resume)
-    return render(request, 'tracker/resume_form.html', {'form': form, 'resume': resume})
+
+    return render(request, 'tracker/partials/job_table.html', {'jobs': jobs})
+
+@csrf_exempt
+def application_details(request, application_id):
+    job = get_object_or_404(JobApplication, id=int(application_id))
+    return render(request, 'tracker/partials/application_details.html', {'job': job})
+
+def application_view(request, application_id):
+    return HttpResponse(status=200)
+
+@csrf_exempt  # Disable CSRF for simplicity in this view
+@require_http_methods(["DELETE"])
+def delete_individual(request):
+    job_id = request.headers.get('X-Job-ID', None)
+
+    if not job_id:
+        return HttpResponse(status=400)  # Bad Request if no job ID
+
+    job = get_object_or_404(JobApplication, id=int(job_id))
+    job.delete()
+
+    # Return a 204 No Content response to remove the row
+    return HttpResponse(status=200)
